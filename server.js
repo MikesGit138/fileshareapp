@@ -27,8 +27,13 @@ app.post('/upload', upload.single('file'), async (req, res)=>{
     }
 
     const file = await File.create(fileData)
-    console.log(file)
-    res.send(file.originalName)
+    // console.log(file)
+    // res.send(file.originalName)
+    res.render('index', {fileLink: `${req.headers.origin}/file/${file.id}`})
 })
 
-app.listen(process.env.PORT)
+app.get('/file/:id', (req, res)=>{
+    
+})
+
+app.listen(process.env.PORT, () => console.log('your server is running on http://localhost:' + process.env.PORT))
