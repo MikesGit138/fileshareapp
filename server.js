@@ -5,8 +5,10 @@ const app = express()
 const mongoose = require('mongoose')
 const upload = multer({dest: 'uploads'})
 const bcrypt = require('bcrypt')
-const file = require('./models/file')
+
 const File = require('./models/file')
+const file = require('./models/file')
+
 
 mongoose.connect(process.env.DATABASE_URL)
 
@@ -32,8 +34,14 @@ app.post('/upload', upload.single('file'), async (req, res)=>{
     res.render('index', {fileLink: `${req.headers.origin}/file/${file.id}`})
 })
 
-app.get('/file/:id', (req, res)=>{
-    
+app.get('/file/:id', async (req, res)=>{
+    const file = await File.findById(req.params.id)
+
+    file.downloadCount++
+    await file.save()
+    console.log(file.downloadCount)
+
+    res.download(file.path, file.originalName)
 })
 
 app.listen(process.env.PORT, () => console.log('your server is running on http://localhost:' + process.env.PORT))
